@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="org.mariotaku.twidere.extension.appwidget"
+	android:installLocation="internalOnly"
+	android:versionCode="1"
+	android:versionName="1.0">
+
+	<uses-sdk
+		android:minSdkVersion="11"
+		android:targetSdkVersion="15"/>
+
+	<uses-permission android:name="org.mariotaku.twidere.READ_DATABASES"/>
+	<uses-permission android:name="org.mariotaku.twidere.WRITE_DATABASES"/>
+	<uses-permission android:name="org.mariotaku.twidere.ACCESS_SERVICE"/>
+
+	<application
+		android:icon="@drawable/ic_launcher"
+		android:label="@string/app_name">
+		<receiver
+			android:name=".provider.StackWidgetProvider"
+			android:label="@string/ticker_widget_name">
+			<intent-filter>
+				<action android:name="org.mariotaku.twidere.HOME_TIMELINE_DATABASE_UPDATED"/>
+				<action android:name="org.mariotaku.twidere.MENTIONS_DATABASE_UPDATED"/>
+				<action android:name="org.mariotaku.twidere.ACCOUNT_LIST_DATABASE_UPDATED"/>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+			</intent-filter>
+
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/stack_widget"/>
+		</receiver>
+		<receiver
+			android:name=".provider.TweetListWidgetProvider"
+			android:label="tweet list">
+			<intent-filter>
+				<action android:name="org.mariotaku.twidere.HOME_TIMELINE_DATABASE_UPDATED"/>
+				<action android:name="org.mariotaku.twidere.MENTIONS_DATABASE_UPDATED"/>
+				<action android:name="org.mariotaku.twidere.ACCOUNT_LIST_DATABASE_UPDATED"/>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+			</intent-filter>
+
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/list_widget"/>
+		</receiver>
+
+		<service
+			android:name=".service.StackWidgetHomeTimelineService"
+			android:permission="android.permission.BIND_REMOTEVIEWS"/>
+		<service
+			android:name=".service.StackWidgetMentionsService"
+			android:permission="android.permission.BIND_REMOTEVIEWS"/>
+		<service
+			android:name=".service.ListWidgetHomeTimelineService"
+			android:permission="android.permission.BIND_REMOTEVIEWS"/>
+		<service
+			android:name=".service.ListWidgetMentionsService"
+			android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+		<activity
+			android:name=".activity.WidgetTypeConfigActivity"
+			android:label="@string/widget_type"
+			android:theme="@android:style/Theme.Holo.Dialog">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".activity.SettingsActivity"
+			android:label="@string/settings">
+			<intent-filter>
+				<action android:name="org.mariotaku.twidere.EXTENSION_SETTINGS"/>
+
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</activity>
+	</application>
+
+</manifest>

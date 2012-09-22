@@ -1,0 +1,9 @@
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+	android:autoAdvanceViewId="@+id/stack_view"
+	android:configure="org.mariotaku.twidere.extension.appwidget.activity.WidgetTypeConfigActivity"
+	android:initialLayout="@layout/stack_widget"
+	android:minHeight="72dp"
+	android:minWidth="270dp"
+	android:previewImage="@drawable/stack_widget_preview"
+	android:resizeMode="vertical"
+	android:updatePeriodMillis="0"/>

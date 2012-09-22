@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Twidere Homescreen Widget</string>
+	<string name="ticker_widget_name">Tweet Ticker</string>
+	<string name="loading">Loading…</string>
+	<string name="widget_type">Widget Type</string>
+	<string name="home_timeline">Home Timeline</string>
+	<string name="mentions">Mentions</string>
+	<string name="display_name">Display name</string>
+	<string name="display_profile_image">Display profile image</string>
+	<string name="enable_filter">Enable filter</string>
+	<string name="more_applications">More applications</string>
+	<string name="donate">Donate</string>
+	<string name="settings">Tweet Widget Settings</string>
+
+</resources>

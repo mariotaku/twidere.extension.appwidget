@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string-array name="ticker_types">
+		<item>@string/home_timeline</item>
+		<item>@string/mentions</item>
+	</string-array>
+
+</resources>
