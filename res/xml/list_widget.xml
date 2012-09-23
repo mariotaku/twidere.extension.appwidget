@@ -3,5 +3,6 @@
 	android:initialLayout="@layout/list_widget"
 	android:minHeight="140dp"
 	android:minWidth="270dp"
+	android:previewImage="@drawable/list_widget_preview"
 	android:resizeMode="vertical|horizontal"
 	android:updatePeriodMillis="0"/>

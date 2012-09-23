@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 public class StackWidgetProvider extends AppWidgetProvider implements Constants {
@@ -70,7 +69,6 @@ public class StackWidgetProvider extends AppWidgetProvider implements Constants 
 			final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.stack_widget);
 			final Intent intent;
 			final int widget_type = preferences.getInt(String.valueOf(id), WIDGET_TYPE_HOME_TIMELINE);
-			Log.d("Widget", "id = " + id + ", type = " + widget_type);
 			switch (widget_type) {
 				case WIDGET_TYPE_MENTIONS:
 					intent = new Intent(context, StackWidgetMentionsService.class);

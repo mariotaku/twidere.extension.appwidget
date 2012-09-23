@@ -2,7 +2,8 @@
 <resources>
 
 	<string name="app_name">Twidere Homescreen Widget</string>
-	<string name="ticker_widget_name">Tweet Ticker</string>
+	<string name="stack_widget_name">Tweets Ticker</string>
+	<string name="list_widget_name">Tweets List</string>
 	<string name="loading">Loading…</string>
 	<string name="widget_type">Widget Type</string>
 	<string name="home_timeline">Home Timeline</string>

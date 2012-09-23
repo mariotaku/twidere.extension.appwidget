@@ -17,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -102,7 +101,6 @@ public class ListWidgetProvider extends AppWidgetProvider implements Constants {
 
 			final Intent adapter_intent;
 			final int widget_type = preferences.getInt(String.valueOf(id), WIDGET_TYPE_HOME_TIMELINE);
-			Log.d("Widget", "id = " + id + ", type = " + widget_type);
 			switch (widget_type) {
 				case WIDGET_TYPE_MENTIONS:
 					views.setViewVisibility(R.id.refresh_progress, is_mentions_refreshing ? View.VISIBLE : View.GONE);
