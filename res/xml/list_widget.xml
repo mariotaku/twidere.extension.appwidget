@@ -1,7 +1,7 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
 	android:configure="org.mariotaku.twidere.extension.appwidget.activity.WidgetTypeConfigActivity"
 	android:initialLayout="@layout/list_widget"
-	android:minHeight="72dp"
+	android:minHeight="140dp"
 	android:minWidth="270dp"
 	android:resizeMode="vertical|horizontal"
 	android:updatePeriodMillis="0"/>

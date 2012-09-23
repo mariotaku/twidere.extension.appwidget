@@ -39,13 +39,13 @@ public class ListWidgetHomeTimelineService extends RemoteViewsService implements
 	}
 
 	@Override
-	public RemoteViewsFactory onGetViewFactory(Intent intent) {
+	public RemoteViewsFactory onGetViewFactory(final Intent intent) {
 		return mHomeTimelineAdapter;
 	}
 
 	public static class HomeTimelineAdapter extends StatusesAdapter {
 
-		public HomeTimelineAdapter(Context context) {
+		public HomeTimelineAdapter(final Context context) {
 			super(context, R.layout.list_status_item);
 		}
 

@@ -2,9 +2,12 @@ package org.mariotaku.twidere.extension.appwidget.activity;
 
 import org.mariotaku.twidere.extension.appwidget.Constants;
 import org.mariotaku.twidere.extension.appwidget.R;
+import org.mariotaku.twidere.extension.appwidget.provider.ListWidgetProvider;
+import org.mariotaku.twidere.extension.appwidget.provider.StackWidgetProvider;
 
 import android.app.ListActivity;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,15 +21,15 @@ public class WidgetTypeConfigActivity extends ListActivity implements Constants 
 	private SharedPreferences mPreferences;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAdapter = ArrayAdapter.createFromResource(this, R.array.ticker_types, android.R.layout.simple_list_item_1);
-		mPreferences = getSharedPreferences(TICKER_WIDGETS_PREFERENCES_NAME, MODE_PRIVATE);
+		mPreferences = getSharedPreferences(WIDGETS_PREFERENCES_NAME, MODE_PRIVATE);
 		setListAdapter(mAdapter);
 	}
 
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+	protected void onListItemClick(final ListView l, final View v, final int position, final long id) {
 		final Intent intent = getIntent();
 		final Bundle extras = intent.getExtras();
 		final int widget_id = extras != null ? extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -38,10 +41,10 @@ public class WidgetTypeConfigActivity extends ListActivity implements Constants 
 		final SharedPreferences.Editor editor = mPreferences.edit();
 		switch (position) {
 			case 0:
-				editor.putInt(String.valueOf(widget_id), TICKER_WIDGET_TYPE_HOME_TIMELINE);
+				editor.putInt(String.valueOf(widget_id), WIDGET_TYPE_HOME_TIMELINE);
 				break;
 			case 1:
-				editor.putInt(String.valueOf(widget_id), TICKER_WIDGET_TYPE_MENTIONS);
+				editor.putInt(String.valueOf(widget_id), WIDGET_TYPE_MENTIONS);
 				break;
 			default:
 				setResult(RESULT_CANCELED);
@@ -50,6 +53,18 @@ public class WidgetTypeConfigActivity extends ListActivity implements Constants 
 		}
 		editor.apply();
 		setResult(RESULT_OK, new Intent().putExtras(extras));
+		final AppWidgetManager manager = AppWidgetManager.getInstance(this);
+
+		final Intent list_broadcast = new Intent(this, ListWidgetProvider.class);
+		list_broadcast.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		list_broadcast.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+				manager.getAppWidgetIds(new ComponentName(this, ListWidgetProvider.class)));
+		sendBroadcast(list_broadcast);
+		final Intent stack_broadcast = new Intent(this, StackWidgetProvider.class);
+		stack_broadcast.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		stack_broadcast.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+				manager.getAppWidgetIds(new ComponentName(this, StackWidgetProvider.class)));
+		sendBroadcast(stack_broadcast);
 		finish();
 	}
 

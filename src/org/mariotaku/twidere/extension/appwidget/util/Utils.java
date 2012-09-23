@@ -1,6 +1,8 @@
 package org.mariotaku.twidere.extension.appwidget.util;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.mariotaku.twidere.Constants;
@@ -15,6 +17,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -65,7 +68,9 @@ public final class Utils implements Constants {
 	public static final Pattern PATTERN_TWITTER_PROFILE_IMAGES = Pattern.compile(STRING_PATTERN_TWITTER_PROFILE_IMAGES,
 			Pattern.CASE_INSENSITIVE);
 
-	public static String buildActivatedStatsWhereClause(Context context, String selection) {
+	private static Map<Long, Integer> sAccountColors = new LinkedHashMap<Long, Integer>();
+
+	public static String buildActivatedStatsWhereClause(final Context context, final String selection) {
 		if (context == null) return null;
 		final long[] account_ids = getActivatedAccountIds(context);
 		final StringBuilder builder = new StringBuilder();
@@ -81,7 +86,7 @@ public final class Utils implements Constants {
 		return builder.toString();
 	}
 
-	public static String buildFilterWhereClause(String table, String selection) {
+	public static String buildFilterWhereClause(final String table, final String selection) {
 		if (table == null) return null;
 		final StringBuilder builder = new StringBuilder();
 		if (selection != null) {
@@ -113,7 +118,26 @@ public final class Utils implements Constants {
 		return builder.toString();
 	}
 
-	public static long[] getActivatedAccountIds(Context context) {
+	public static int getAccountColor(final Context context, final long account_id) {
+		if (context == null) return Color.TRANSPARENT;
+		Integer color = sAccountColors.get(account_id);
+		if (color == null) {
+			final Cursor cur = context.getContentResolver().query(Accounts.CONTENT_URI,
+					new String[] { Accounts.USER_COLOR }, Accounts.USER_ID + "=" + account_id, null, null);
+			if (cur == null) return Color.TRANSPARENT;
+			if (cur.getCount() <= 0) {
+				cur.close();
+				return Color.TRANSPARENT;
+			}
+			cur.moveToFirst();
+			color = cur.getInt(cur.getColumnIndexOrThrow(Accounts.USER_COLOR));
+			cur.close();
+			sAccountColors.put(account_id, color);
+		}
+		return color;
+	}
+
+	public static long[] getActivatedAccountIds(final Context context) {
 		long[] accounts = new long[0];
 		if (context == null) return accounts;
 		final String[] cols = new String[] { Accounts.USER_ID };
@@ -134,19 +158,19 @@ public final class Utils implements Constants {
 		return accounts;
 	}
 
-	public static String getBiggerTwitterProfileImage(String url) {
+	public static String getBiggerTwitterProfileImage(final String url) {
 		if (url == null) return null;
 		if (PATTERN_TWITTER_PROFILE_IMAGES.matcher(url).matches())
 			return replaceLast(url, "_" + TWITTER_PROFILE_IMAGES_AVAILABLE_SIZES, "_bigger");
 		return url;
 	}
 
-	public static String getFilename(String string) {
+	public static String getFilename(final String string) {
 		if (string == null) return null;
 		return string.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9]", "_");
 	}
 
-	public static Bitmap getRoundedCornerBitmap(Resources resources, Bitmap bitmap) {
+	public static Bitmap getRoundedCornerBitmap(final Resources resources, final Bitmap bitmap) {
 
 		final float density = resources.getDisplayMetrics().density;
 		final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -169,12 +193,12 @@ public final class Utils implements Constants {
 		return output;
 	}
 
-	public static int getTableId(Uri uri) {
+	public static int getTableId(final Uri uri) {
 		if (uri == null) return -1;
 		return CONTENT_PROVIDER_URI_MATCHER.match(uri);
 	}
 
-	public static String getTableNameForContentUri(Uri uri) {
+	public static String getTableNameForContentUri(final Uri uri) {
 		if (uri == null) return null;
 		switch (getTableId(uri)) {
 			case URI_ACCOUNTS:
@@ -225,7 +249,7 @@ public final class Utils implements Constants {
 		return null;
 	}
 
-	public static String replaceLast(String text, String regex, String replacement) {
+	public static String replaceLast(final String text, final String regex, final String replacement) {
 		if (text == null || regex == null || replacement == null) return text;
 		return text.replaceFirst("(?s)" + regex + "(?!.*?" + regex + ")", replacement);
 	}

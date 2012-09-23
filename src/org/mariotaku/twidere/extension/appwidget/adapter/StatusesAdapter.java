@@ -5,6 +5,8 @@ import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_DISPLAY_PROFILE_IMA
 import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_ENABLE_FILTER;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildActivatedStatsWhereClause;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildFilterWhereClause;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getAccountColor;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getActivatedAccountIds;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getBiggerTwitterProfileImage;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getFilename;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getRoundedCornerBitmap;
@@ -29,6 +31,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -46,7 +49,9 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 	private Cursor cursor;
 	private StatusCursorIndices indices;
 
-	public StatusesAdapter(Context context, int layout) {
+	private boolean should_show_account_color;
+
+	public StatusesAdapter(final Context context, final int layout) {
 		this.layout = layout;
 		this.context = context;
 		resolver = context.getContentResolver();
@@ -62,7 +67,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 	}
 
 	@Override
-	public long getItemId(int position) {
+	public long getItemId(final int position) {
 		if (cursor == null) return -1;
 		cursor.moveToPosition(position);
 		return cursor.getLong(indices._id);
@@ -76,7 +81,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 	}
 
 	@Override
-	public RemoteViews getViewAt(int position) {
+	public RemoteViews getViewAt(final int position) {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), layout);
 		if (cursor == null || indices == null) return views;
 		cursor.moveToPosition(position);
@@ -97,7 +102,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 		final Intent intent = new Intent(Intent.ACTION_VIEW, uri_builder.build());
 		final PendingIntent pending_intent = PendingIntent.getActivity(context, 0, intent,
 				Intent.FLAG_ACTIVITY_NEW_TASK);
-		views.setOnClickPendingIntent(R.id.item, pending_intent);
+		views.setOnClickPendingIntent(R.id.tweet_item, pending_intent);
 		if (!preferences.getBoolean(PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE, true)) {
 			views.setViewVisibility(R.id.profile_image, View.GONE);
 		} else {
@@ -116,6 +121,9 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 				views.setImageViewResource(R.id.profile_image, R.drawable.ic_profile_image_default);
 			}
 		}
+		final long account_id = cursor.getLong(indices.account_id);
+		views.setInt(R.id.account_color, "setBackgroundColor",
+				should_show_account_color ? getAccountColor(context, account_id) : Color.TRANSPARENT);
 
 		return views;
 	}
@@ -146,6 +154,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 		}
 		cursor = resolver.query(uri, cols, where, null, Statuses.DEFAULT_SORT_ORDER);
 		indices = new StatusCursorIndices(cursor);
+		should_show_account_color = getActivatedAccountIds(context).length > 1;
 	}
 
 	@Override

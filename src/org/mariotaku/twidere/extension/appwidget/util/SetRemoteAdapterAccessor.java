@@ -8,7 +8,7 @@ import android.widget.RemoteViews;
 public final class SetRemoteAdapterAccessor {
 
 	@TargetApi(14)
-	public static void setRemoteAdapter(RemoteViews views, int viewId, Intent intent) {
+	public static void setRemoteAdapter(final RemoteViews views, final int viewId, final Intent intent) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			views.setRemoteAdapter(viewId, intent);
 		}

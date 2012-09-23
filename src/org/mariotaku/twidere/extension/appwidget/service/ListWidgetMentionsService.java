@@ -39,13 +39,13 @@ public class ListWidgetMentionsService extends RemoteViewsService implements Con
 	}
 
 	@Override
-	public RemoteViewsFactory onGetViewFactory(Intent intent) {
+	public RemoteViewsFactory onGetViewFactory(final Intent intent) {
 		return mMentionsAdapter;
 	}
 
 	public static class MentionsAdapter extends StatusesAdapter {
 
-		public MentionsAdapter(Context context) {
+		public MentionsAdapter(final Context context) {
 			super(context, R.layout.list_status_item);
 		}
 

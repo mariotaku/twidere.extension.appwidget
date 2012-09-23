@@ -14,7 +14,7 @@ import android.preference.PreferenceActivity;
 public class SettingsActivity extends PreferenceActivity implements Constants, OnSharedPreferenceChangeListener {
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+	public void onSharedPreferenceChanged(final SharedPreferences prefs, final String key) {
 		final AppWidgetManager manager = AppWidgetManager.getInstance(this);
 		final int[] ids = manager.getAppWidgetIds(new ComponentName(this, StackWidgetProvider.class));
 		manager.notifyAppWidgetViewDataChanged(ids, R.id.stack_view);
@@ -22,7 +22,7 @@ public class SettingsActivity extends PreferenceActivity implements Constants, O
 
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getPreferenceManager().setSharedPreferencesName(SHARED_PREFERENCES_NAME);
 		getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
