@@ -2,11 +2,9 @@ package org.mariotaku.twidere.extension.appwidget.provider;
 
 import org.mariotaku.twidere.Twidere;
 import org.mariotaku.twidere.extension.appwidget.Constants;
-import org.mariotaku.twidere.extension.appwidget.ExtensionApplication;
 import org.mariotaku.twidere.extension.appwidget.R;
 import org.mariotaku.twidere.extension.appwidget.service.ListWidgetHomeTimelineService;
 import org.mariotaku.twidere.extension.appwidget.service.ListWidgetMentionsService;
-import org.mariotaku.twidere.extension.appwidget.util.ServiceInterface;
 import org.mariotaku.twidere.extension.appwidget.util.SetRemoteAdapterAccessor;
 
 import android.app.PendingIntent;
@@ -62,18 +60,10 @@ public class ListWidgetProvider extends AppWidgetProvider implements Constants {
 
 		} else if (Twidere.BROADCAST_ACCOUNT_LIST_DATABASE_UPDATED.equals(action)) {
 			manager.notifyAppWidgetViewDataChanged(ids, R.id.list_view);
-		} else if (Twidere.BROADCAST_REFRESHSTATE_CHANGED.equals(action)) {
+		} else if (Twidere.BROADCAST_TASK_STATE_CHANGED.equals(action)) {
 			onUpdate(context, manager, ids);
 		} else if (BROADCAST_REFRESH_ALL.equals(action)) {
-			final ServiceInterface service = ((ExtensionApplication) context.getApplicationContext())
-					.getServiceInterface();
-			new Thread() {
-				@Override
-				public void run() {
-					service.waitForService();
-					service.refreshAll();
-				}
-			}.start();
+			// TODO
 		}
 		super.onReceive(context, intent);
 	}
@@ -83,10 +73,9 @@ public class ListWidgetProvider extends AppWidgetProvider implements Constants {
 	public void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
 		final SharedPreferences preferences = context.getSharedPreferences(WIDGETS_PREFERENCES_NAME,
 				Context.MODE_PRIVATE);
-		final ServiceInterface service = ((ExtensionApplication) context.getApplicationContext()).getServiceInterface();
-		service.waitForService();
-		final boolean is_mentions_refreshing = service.isMentionsRefreshing();
-		final boolean is_home_timeline_refreshing = service.isHomeTimelineRefreshing();
+		// service.waitForService();
+		final boolean is_mentions_refreshing = false;
+		final boolean is_home_timeline_refreshing = false;
 		for (final int id : ids) {
 			final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.list_widget);
 			final PendingIntent compose_intent = PendingIntent.getActivity(context, 0, new Intent(

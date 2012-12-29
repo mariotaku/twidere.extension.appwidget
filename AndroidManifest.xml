@@ -2,21 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="org.mariotaku.twidere.extension.appwidget"
 	android:installLocation="internalOnly"
-	android:versionCode="1"
-	android:versionName="0.0">
+	android:versionCode="3"
+	android:versionName="1.1">
 
 	<uses-sdk
 		android:minSdkVersion="11"
-		android:targetSdkVersion="15"/>
-
-	<uses-permission android:name="org.mariotaku.twidere.READ_DATABASES"/>
-	<uses-permission android:name="org.mariotaku.twidere.WRITE_DATABASES"/>
-	<uses-permission android:name="org.mariotaku.twidere.ACCESS_SERVICE"/>
+		android:targetSdkVersion="17"/>
 
 	<application
-		android:name="ExtensionApplication"
+		android:allowBackup="false"
 		android:icon="@drawable/ic_launcher"
 		android:label="@string/app_name">
+		<meta-data
+			android:name="org.mariotaku.twidere.extension"
+			android:value="true"/>
+		<meta-data
+			android:name="org.mariotaku.twidere.extension.permissions"
+			android:value="2310"/>
+		<meta-data
+			android:name="org.mariotaku.twidere.extension.settings"
+			android:value="org.mariotaku.twidere.extension.appwidget.activity.SettingsActivity"/>
+
 		<receiver
 			android:name=".provider.StackWidgetProvider"
 			android:label="@string/stack_widget_name">

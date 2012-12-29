@@ -19,8 +19,8 @@
 			android:layout_height="@dimen/profile_image_size"
 			android:scaleType="fitCenter"/>
 
-		<TextView
-			android:id="@+id/name"
+		<FrameLayout
+			android:id="@+id/name_frame"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
@@ -28,21 +28,49 @@
 			android:layout_marginLeft="3dp"
 			android:layout_toLeftOf="@+id/time"
 			android:layout_toRightOf="@+id/profile_image"
-			android:singleLine="true"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="?android:attr/textColorPrimary"
-			android:textSize="15sp"
-			android:textStyle="bold"/>
+			android:gravity="center_vertical|right"
+			android:orientation="horizontal">
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left"
+				android:orientation="horizontal">
+
+				<TextView
+					android:id="@+id/name"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:layerType="software"
+					android:singleLine="true"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:textColor="?android:attr/textColorPrimary"
+					android:textSize="14sp"
+					android:textStyle="bold"/>
+
+				<TextView
+					android:id="@+id/screen_name"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layerType="software"
+					android:paddingLeft="3dp"
+					android:paddingRight="3dp"
+					android:singleLine="true"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:textColor="?android:attr/textColorSecondary"
+					android:textSize="12sp"/>
+			</LinearLayout>
+		</FrameLayout>
 
 		<TextView
 			android:id="@+id/text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignLeft="@+id/name"
+			android:layout_alignLeft="@+id/name_frame"
 			android:layout_alignParentRight="true"
 			android:layout_alignWithParentIfMissing="true"
-			android:layout_below="@+id/name"
-			android:ellipsize="end"
+			android:layout_below="@+id/name_frame"
 			android:textAppearance="?android:attr/textAppearanceSmall"
 			android:textColor="?android:attr/textColorSecondary"
 			android:textSize="14sp"/>
@@ -51,13 +79,13 @@
 			android:id="@+id/time"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignBaseline="@+id/name"
+			android:layout_alignBottom="@+id/name_frame"
 			android:layout_alignParentRight="true"
 			android:layout_alignWithParentIfMissing="true"
 			android:drawablePadding="3dp"
 			android:gravity="center_vertical|right"
 			android:textColor="?android:attr/textColorSecondary"
-			android:textSize="12sp"/>
+			android:textSize="10sp"/>
 	</RelativeLayout>
 
 	<ImageView

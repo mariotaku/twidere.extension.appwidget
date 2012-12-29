@@ -1,8 +1,6 @@
 package org.mariotaku.twidere.extension.appwidget.adapter;
 
-import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_DISPLAY_NAME;
 import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE;
-import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_ENABLE_FILTER;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildActivatedStatsWhereClause;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildFilterWhereClause;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getAccountColor;
@@ -10,7 +8,8 @@ import static org.mariotaku.twidere.extension.appwidget.util.Utils.getActivatedA
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getBiggerTwitterProfileImage;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getFilename;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getRoundedCornerBitmap;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableNameForContentUri;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableId;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableNameById;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTwidereCacheDir;
 
 import java.io.File;
@@ -85,12 +84,9 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), layout);
 		if (cursor == null || indices == null) return views;
 		cursor.moveToPosition(position);
-		if (!preferences.getBoolean(PREFERENCE_KEY_DISPLAY_NAME, true)) {
-			views.setTextViewText(R.id.name, cursor.getString(indices.screen_name));
-		} else {
-			views.setTextViewText(R.id.name, cursor.getString(indices.name));
-		}
-		views.setTextViewText(R.id.text, HtmlEscapeHelper.unescape(cursor.getString(indices.text)));
+		views.setTextViewText(R.id.screen_name, "@" + cursor.getString(indices.screen_name));
+		views.setTextViewText(R.id.name, cursor.getString(indices.name));
+		views.setTextViewText(R.id.text, HtmlEscapeHelper.unescape(cursor.getString(indices.text_html)));
 		views.setTextViewText(R.id.time, DateUtils.getRelativeTimeSpanString(cursor.getLong(indices.status_timestamp)));
 		final Uri.Builder uri_builder = new Uri.Builder();
 		uri_builder.scheme(Twidere.SCHEME_TWIDERE);
@@ -101,7 +97,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 				String.valueOf(cursor.getLong(indices.status_id)));
 		final Intent intent = new Intent(Intent.ACTION_VIEW, uri_builder.build());
 		final PendingIntent pending_intent = PendingIntent.getActivity(context, 0, intent,
-				Intent.FLAG_ACTIVITY_NEW_TASK);
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		views.setOnClickPendingIntent(R.id.tweet_item, pending_intent);
 		if (!preferences.getBoolean(PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE, true)) {
 			views.setViewVisibility(R.id.profile_image, View.GONE);
@@ -147,11 +143,8 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 		final Uri uri = getContentUri();
 		final String[] cols = new String[] { Statuses._ID, Statuses.ACCOUNT_ID, Statuses.STATUS_ID, Statuses.TEXT,
 				Statuses.SCREEN_NAME, Statuses.NAME, Statuses.STATUS_TIMESTAMP, Statuses.PROFILE_IMAGE_URL };
-		String where = buildActivatedStatsWhereClause(context, null);
-		if (preferences.getBoolean(PREFERENCE_KEY_ENABLE_FILTER, false)) {
-			final String table = getTableNameForContentUri(uri);
-			where = buildFilterWhereClause(table, where);
-		}
+		final String where = buildFilterWhereClause(getTableNameById(getTableId(uri)),
+				buildActivatedStatsWhereClause(context, null));
 		cursor = resolver.query(uri, cols, where, null, Statuses.DEFAULT_SORT_ORDER);
 		indices = new StatusCursorIndices(cursor);
 		should_show_account_color = getActivatedAccountIds(context).length > 1;
