@@ -5,12 +5,8 @@ import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildActivate
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildFilterWhereClause;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getAccountColor;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getActivatedAccountIds;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getBiggerTwitterProfileImage;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getFilename;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getRoundedCornerBitmap;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableId;
 import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableNameById;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTwidereCacheDir;
 
 import java.io.File;
 
@@ -36,6 +32,7 @@ import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
+import android.util.Log;
 
 public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 
@@ -103,16 +100,10 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 			views.setViewVisibility(R.id.profile_image, View.GONE);
 		} else {
 			views.setViewVisibility(R.id.profile_image, View.VISIBLE);
-			final File cache_dir = getTwidereCacheDir();
-			final String profile_image_url = cursor.getString(indices.profile_image_url);
-			final String file_name = getFilename(resources.getBoolean(R.bool.hires_profile_image) ? getBiggerTwitterProfileImage(profile_image_url)
-					: profile_image_url);
-			final File profile_image_file = cache_dir != null && cache_dir.isDirectory() && file_name != null ? new File(
-					cache_dir, file_name) : null;
-			final Bitmap profile_image = profile_image_file != null && profile_image_file.isFile() ? BitmapFactory
-					.decodeFile(profile_image_file.getPath()) : null;
+			final String profile_image_path = Twidere.getCachedImagePath(context, cursor.getString(indices.profile_image_url));
+			final Bitmap profile_image = BitmapFactory.decodeFile(profile_image_path);
 			if (profile_image != null) {
-				views.setImageViewBitmap(R.id.profile_image, getRoundedCornerBitmap(resources, profile_image));
+				views.setImageViewBitmap(R.id.profile_image, profile_image);
 			} else {
 				views.setImageViewResource(R.id.profile_image, R.drawable.ic_profile_image_default);
 			}
@@ -141,7 +132,7 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 	@Override
 	public void onDataSetChanged() {
 		final Uri uri = getContentUri();
-		final String[] cols = new String[] { Statuses._ID, Statuses.ACCOUNT_ID, Statuses.STATUS_ID, Statuses.TEXT,
+		final String[] cols = new String[] { Statuses._ID, Statuses.ACCOUNT_ID, Statuses.STATUS_ID, Statuses.TEXT_HTML,
 				Statuses.SCREEN_NAME, Statuses.NAME, Statuses.STATUS_TIMESTAMP, Statuses.PROFILE_IMAGE_URL };
 		final String where = buildFilterWhereClause(getTableNameById(getTableId(uri)),
 				buildActivatedStatsWhereClause(context, null));

@@ -5,4 +5,5 @@
 	android:minWidth="270dp"
 	android:previewImage="@drawable/list_widget_preview"
 	android:resizeMode="vertical|horizontal"
-	android:updatePeriodMillis="0"/>
+	android:updatePeriodMillis="0"
+	android:widgetCategory="home_screen|keyguard"/>

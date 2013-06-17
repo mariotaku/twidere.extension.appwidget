@@ -43,7 +43,7 @@ public class SettingsActivity extends PreferenceActivity implements Constants, O
 		super.onCreate(savedInstanceState);
 		final boolean granted;
 		try {
-			granted = Twidere.checkPermissionsSatisfied(this);
+			granted = Twidere.isPermissionGranted(this);
 		} catch (SecurityException e) {
 			//TODO show error
 			finish();
@@ -58,5 +58,4 @@ public class SettingsActivity extends PreferenceActivity implements Constants, O
 		getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this);
 		addPreferencesFromResource(R.xml.settings);
 	}
-
 }

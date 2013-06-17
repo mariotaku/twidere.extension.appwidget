@@ -58,8 +58,6 @@ public final class Utils implements Constants {
 		CONTENT_PROVIDER_URI_MATCHER.addURI(TweetStore.AUTHORITY, TABLE_CACHED_HASHTAGS, TABLE_ID_CACHED_HASHTAGS);
 		CONTENT_PROVIDER_URI_MATCHER.addURI(TweetStore.AUTHORITY, TABLE_NOTIFICATIONS + "/#",
 				VIRTUAL_TABLE_ID_NOTIFICATIONS);
-		CONTENT_PROVIDER_URI_MATCHER.addURI(TweetStore.AUTHORITY, TABLE_CONSUMER_KEY_SECRET,
-				VIRTUAL_TABLE_ID_CONSUMER_KEY_SECRET);
 		CONTENT_PROVIDER_URI_MATCHER.addURI(TweetStore.AUTHORITY, TABLE_PERMISSIONS, VIRTUAL_TABLE_ID_PERMISSIONS);
 
 	}
@@ -104,21 +102,21 @@ public final class Utils implements Constants {
 		builder.append(Statuses._ID + " NOT IN ( ");
 		builder.append("SELECT DISTINCT " + table + "." + Statuses._ID + " FROM " + table);
 		builder.append(" WHERE " + table + "." + Statuses.SCREEN_NAME + " IN ( SELECT " + TABLE_FILTERED_USERS + "."
-				+ Filters.Users.TEXT + " FROM " + TABLE_FILTERED_USERS + " )");
+				+ Filters.Users.VALUE + " FROM " + TABLE_FILTERED_USERS + " )");
 		builder.append(" AND " + table + "." + Statuses.IS_GAP + " IS NULL");
 		builder.append(" OR " + table + "." + Statuses.IS_GAP + " == 0");
 		builder.append(" UNION ");
 		builder.append("SELECT DISTINCT " + table + "." + Statuses._ID + " FROM " + table + ", "
 				+ TABLE_FILTERED_SOURCES);
 		builder.append(" WHERE " + table + "." + Statuses.SOURCE + " LIKE '%>'||" + TABLE_FILTERED_SOURCES + "."
-				+ Filters.Sources.TEXT + "||'</a>%'");
+				+ Filters.Sources.VALUE + "||'</a>%'");
 		builder.append(" AND " + table + "." + Statuses.IS_GAP + " IS NULL");
 		builder.append(" OR " + table + "." + Statuses.IS_GAP + " == 0");
 		builder.append(" UNION ");
 		builder.append("SELECT DISTINCT " + table + "." + Statuses._ID + " FROM " + table + ", "
 				+ TABLE_FILTERED_KEYWORDS);
 		builder.append(" WHERE " + table + "." + Statuses.TEXT_PLAIN + " LIKE '%'||" + TABLE_FILTERED_KEYWORDS + "."
-				+ Filters.Keywords.TEXT + "||'%'");
+				+ Filters.Keywords.VALUE + "||'%'");
 		builder.append(" AND " + table + "." + Statuses.IS_GAP + " IS NULL");
 		builder.append(" OR " + table + "." + Statuses.IS_GAP + " == 0");
 		builder.append(" )");
@@ -166,41 +164,6 @@ public final class Utils implements Constants {
 		return accounts;
 	}
 
-	public static String getBiggerTwitterProfileImage(final String url) {
-		if (url == null) return null;
-		if (PATTERN_TWITTER_PROFILE_IMAGES.matcher(url).matches())
-			return replaceLast(url, "_" + TWITTER_PROFILE_IMAGES_AVAILABLE_SIZES, "_bigger");
-		return url;
-	}
-
-	public static String getFilename(final String string) {
-		if (string == null) return null;
-		return string.replaceFirst("https?:\\/\\/", "").replaceAll("[^a-zA-Z0-9]", "_");
-	}
-
-	public static Bitmap getRoundedCornerBitmap(final Resources resources, final Bitmap bitmap) {
-
-		final float density = resources.getDisplayMetrics().density;
-		final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-		final Canvas canvas = new Canvas(output);
-
-		final int color = 0xff424242;
-		final Paint paint = new Paint();
-		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-		final RectF rectF = new RectF(rect);
-		final float roundPx = density * 4;
-
-		paint.setAntiAlias(true);
-		canvas.drawARGB(0, 0, 0, 0);
-		paint.setColor(color);
-		canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-		canvas.drawBitmap(bitmap, rect, rect, paint);
-
-		return output;
-	}
-
 	public static int getTableId(final Uri uri) {
 		if (uri == null) return -1;
 		return CONTENT_PROVIDER_URI_MATCHER.match(uri);
@@ -241,11 +204,6 @@ public final class Utils implements Constants {
 			default:
 				return null;
 		}
-	}
-
-	public static File getTwidereCacheDir() {
-		return new File(Environment.getExternalStorageDirectory(), "/Android/data/"
-				+ "org.mariotaku.twidere/cache/profile_images");
 	}
 
 	public static String replaceLast(final String text, final String regex, final String replacement) {
