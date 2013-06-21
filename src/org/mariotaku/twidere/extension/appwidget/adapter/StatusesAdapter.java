@@ -1,23 +1,5 @@
 package org.mariotaku.twidere.extension.appwidget.adapter;
 
-import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildActivatedStatsWhereClause;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildFilterWhereClause;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getAccountColor;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getActivatedAccountIds;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableId;
-import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableNameById;
-
-import java.io.File;
-
-import org.mariotaku.twidere.Twidere;
-import org.mariotaku.twidere.extension.appwidget.Constants;
-import org.mariotaku.twidere.extension.appwidget.R;
-import org.mariotaku.twidere.model.StatusCursorIndices;
-import org.mariotaku.twidere.provider.TweetStore.Statuses;
-import org.mariotaku.twidere.util.HtmlEscapeHelper;
-
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,11 +10,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
-import android.util.Log;
+import org.mariotaku.twidere.Twidere;
+import org.mariotaku.twidere.extension.appwidget.Constants;
+import org.mariotaku.twidere.extension.appwidget.R;
+import org.mariotaku.twidere.model.StatusCursorIndices;
+import org.mariotaku.twidere.provider.TweetStore.Statuses;
+
+import static org.mariotaku.twidere.Constants.PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildActivatedStatsWhereClause;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.buildFilterWhereClause;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getAccountColor;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getActivatedAccountIds;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableId;
+import static org.mariotaku.twidere.extension.appwidget.util.Utils.getTableNameById;
 
 public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 
@@ -81,27 +77,29 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), layout);
 		if (cursor == null || indices == null) return views;
 		cursor.moveToPosition(position);
-		views.setTextViewText(R.id.screen_name, "@" + cursor.getString(indices.screen_name));
-		views.setTextViewText(R.id.name, cursor.getString(indices.name));
-		views.setTextViewText(R.id.text, HtmlEscapeHelper.unescape(cursor.getString(indices.text_html)));
+		views.setTextViewText(R.id.screen_name, "@" + cursor.getString(indices.user_screen_name));
+		views.setTextViewText(R.id.name, cursor.getString(indices.user_name));
+		views.setTextViewText(R.id.text, cursor.getString(indices.text_unescaped));
 		views.setTextViewText(R.id.time, DateUtils.getRelativeTimeSpanString(cursor.getLong(indices.status_timestamp)));
+		final boolean is_gap = cursor.getInt(indices.is_gap) == 1;
+		views.setViewVisibility(R.id.status_content, is_gap ? View.GONE : View.VISIBLE);
+		views.setViewVisibility(R.id.account_color, is_gap ? View.GONE : View.VISIBLE);
+		views.setViewVisibility(R.id.gap_indicator, is_gap ? View.VISIBLE : View.GONE);
 		final Uri.Builder uri_builder = new Uri.Builder();
 		uri_builder.scheme(Twidere.SCHEME_TWIDERE);
 		uri_builder.authority(Twidere.AUTHORITY_STATUS);
-		uri_builder.appendQueryParameter(Twidere.QUERY_PARAM_ACCOUNT_ID,
-				String.valueOf(cursor.getLong(indices.account_id)));
-		uri_builder.appendQueryParameter(Twidere.QUERY_PARAM_STATUS_ID,
-				String.valueOf(cursor.getLong(indices.status_id)));
+		final Bundle extras = new Bundle();
+		extras.putLong(Twidere.QUERY_PARAM_ACCOUNT_ID, cursor.getLong(indices.account_id));
+		extras.putLong(Twidere.QUERY_PARAM_STATUS_ID, cursor.getLong(indices.status_id));
 		final Intent intent = new Intent(Intent.ACTION_VIEW, uri_builder.build());
-		final PendingIntent pending_intent = PendingIntent.getActivity(context, 0, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		views.setOnClickPendingIntent(R.id.tweet_item, pending_intent);
+		intent.putExtras(extras);
+		views.setOnClickFillInIntent(R.id.list_item, intent);
 		if (!preferences.getBoolean(PREFERENCE_KEY_DISPLAY_PROFILE_IMAGE, true)) {
 			views.setViewVisibility(R.id.profile_image, View.GONE);
 		} else {
 			views.setViewVisibility(R.id.profile_image, View.VISIBLE);
-			final String profile_image_path = Twidere.getCachedImagePath(context, cursor.getString(indices.profile_image_url));
-			final Bitmap profile_image = BitmapFactory.decodeFile(profile_image_path);
+			final ParcelFileDescriptor fd = Twidere.getCachedImageFd(context, cursor.getString(indices.user_profile_image_url));
+			final Bitmap profile_image = fd != null ? BitmapFactory.decodeFileDescriptor(fd.getFileDescriptor()) : null;
 			if (profile_image != null) {
 				views.setImageViewBitmap(R.id.profile_image, profile_image);
 			} else {
@@ -132,8 +130,8 @@ public abstract class StatusesAdapter implements RemoteViewsFactory, Constants {
 	@Override
 	public void onDataSetChanged() {
 		final Uri uri = getContentUri();
-		final String[] cols = new String[] { Statuses._ID, Statuses.ACCOUNT_ID, Statuses.STATUS_ID, Statuses.TEXT_HTML,
-				Statuses.SCREEN_NAME, Statuses.NAME, Statuses.STATUS_TIMESTAMP, Statuses.PROFILE_IMAGE_URL };
+		final String[] cols = new String[] { Statuses._ID, Statuses.ACCOUNT_ID, Statuses.STATUS_ID, Statuses.TEXT_UNESCAPED,
+				Statuses.SCREEN_NAME, Statuses.NAME, Statuses.STATUS_TIMESTAMP, Statuses.PROFILE_IMAGE_URL, Statuses.IS_GAP };
 		final String where = buildFilterWhereClause(getTableNameById(getTableId(uri)),
 				buildActivatedStatsWhereClause(context, null));
 		cursor = resolver.query(uri, cols, where, null, Statuses.DEFAULT_SORT_ORDER);

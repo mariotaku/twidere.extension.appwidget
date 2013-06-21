@@ -48,6 +48,7 @@
 				<action android:name="org.mariotaku.twidere.ACCOUNT_LIST_DATABASE_UPDATED"/>
 				<action android:name="org.mariotaku.twidere.REFRESHSTATE_CHANGED"/>
 				<action android:name="org.mariotaku.twidere.extension.appwidget.REFRESH_ALL"/>
+				<action android:name="org.mariotaku.twidere.extension.appwidget.SET_LIST_WIDGET_TYPE"/>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
 			</intent-filter>
 

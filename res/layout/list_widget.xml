@@ -2,42 +2,85 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/stack_item_background"
+	android:background="@drawable/appwidget_bg_list_dark"
 	android:orientation="vertical">
 
 	<RelativeLayout
 		android:id="@+id/top_bar"
 		android:layout_width="match_parent"
-		android:layout_height="52dp"
-		android:background="@drawable/actionbar_bg_dark_holo">
+		android:layout_height="@dimen/list_widget_top_bar_height"
+		android:visibility="gone">
 
 		<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/list_widget_top_bar_background_height"
+			android:layout_alignParentBottom="true"
+			android:src="?android:attr/colorActivatedHighlight"/>
+		
+		<ImageView
 			android:id="@+id/logo"
-			android:layout_width="52dp"
+			android:layout_width="@dimen/list_widget_logo_width"
 			android:layout_height="match_parent"
 			android:layout_alignParentLeft="true"
 			android:layout_centerVertical="true"
-			android:padding="8dp"
-			android:src="@drawable/twidere_icon"/>
+			android:padding="4dp"
+			android:src="@drawable/twidere_icon"
+			android:background="?android:attr/selectableItemBackground"/>
 
-		<TextView
-			android:id="@+id/title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+		<FrameLayout
+			android:id="@+id/tab_home"
+			android:layout_width="@dimen/list_widget_tab_width"
+			android:layout_height="match_parent"
 			android:layout_centerVertical="true"
 			android:layout_toRightOf="@+id/logo"
-			android:textAppearance="?android:attr/textAppearanceMedium"/>
+			android:background="?android:attr/selectableItemBackground">
+	
+			<ImageView
+				android:id="@+id/tab_indicator_home"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/list_widget_tab_indicator_height"
+				android:layout_gravity="bottom"
+				android:src="?android:attr/colorActivatedHighlight"/>
+			
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:scaleType="centerInside"
+				android:src="@drawable/ic_tab_home"/>
+		</FrameLayout>
+
+		<FrameLayout
+			android:id="@+id/tab_mentions"
+			android:layout_width="@dimen/list_widget_tab_width"
+			android:layout_height="match_parent"
+			android:layout_centerVertical="true"
+			android:layout_toRightOf="@+id/tab_home"
+			android:background="?android:attr/selectableItemBackground">
+
+			<ImageView
+				android:id="@+id/tab_indicator_mentions"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/list_widget_tab_indicator_height"
+				android:layout_gravity="bottom"
+				android:src="?android:attr/colorActivatedHighlight"/>
+
+			<ImageView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:scaleType="centerInside"
+				android:src="@drawable/ic_tab_mention"/>
+		</FrameLayout>
 
 		<ImageButton
 			android:id="@+id/compose"
-			android:layout_width="52dp"
+			android:layout_width="@dimen/list_widget_action_item_width"
 			android:layout_height="match_parent"
 			android:layout_alignParentRight="true"
-			android:background="@drawable/item_background_holo_dark"
+			android:background="?android:attr/selectableItemBackground"
 			android:src="@drawable/ic_menu_tweet"/>
 
 		<FrameLayout
-			android:layout_width="52dp"
+			android:layout_width="@dimen/list_widget_action_item_width"
 			android:layout_height="match_parent"
 			android:layout_toLeftOf="@+id/compose">
 
@@ -53,7 +96,7 @@
 				android:id="@+id/refresh"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:background="@drawable/item_background_holo_dark"
+				android:background="?android:attr/selectableItemBackground"
 				android:src="@drawable/ic_menu_refresh"/>
 		</FrameLayout>
 	</RelativeLayout>

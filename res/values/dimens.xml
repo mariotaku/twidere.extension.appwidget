@@ -5,5 +5,11 @@
 	<dimen name="activity_profile_image_size">32dp</dimen>
 	<dimen name="preview_image_size">120dp</dimen>
 	<dimen name="set_color_height">240dp</dimen>
+	<dimen name="list_widget_top_bar_height">48dp</dimen>
+	<dimen name="list_widget_logo_width">50dp</dimen>
+	<dimen name="list_widget_tab_width">48dp</dimen>
+	<dimen name="list_widget_action_item_width">50dp</dimen>
+	<dimen name="list_widget_top_bar_background_height">2dp</dimen>
+	<dimen name="list_widget_tab_indicator_height">4dp</dimen>
 
 </resources>

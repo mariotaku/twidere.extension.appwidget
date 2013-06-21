@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/tweet_item"
+	android:id="@+id/list_item"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/list_selector_holo_dark"
+	android:background="?android:attr/selectableItemBackground"
 	android:orientation="horizontal">
 
 	<RelativeLayout
+		android:id="@+id/status_content"
 		android:layout_width="0dp"
 		android:layout_height="match_parent"
 		android:layout_weight="1"
-		android:layerType="software"
-		android:padding="6dp">
+		android:padding="8dp">
 
 		<ImageView
 			android:id="@+id/profile_image"
@@ -25,7 +25,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
 			android:layout_alignWithParentIfMissing="true"
-			android:layout_marginLeft="3dp"
+			android:layout_marginLeft="4dp"
 			android:layout_toLeftOf="@+id/time"
 			android:layout_toRightOf="@+id/profile_image"
 			android:gravity="center_vertical|right"
@@ -54,8 +54,8 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layerType="software"
-					android:paddingLeft="3dp"
-					android:paddingRight="3dp"
+					android:paddingLeft="4dp"
+					android:paddingRight="4dp"
 					android:singleLine="true"
 					android:textAppearance="?android:attr/textAppearanceSmall"
 					android:textColor="?android:attr/textColorSecondary"
@@ -82,15 +82,25 @@
 			android:layout_alignBottom="@+id/name_frame"
 			android:layout_alignParentRight="true"
 			android:layout_alignWithParentIfMissing="true"
-			android:drawablePadding="3dp"
+			android:drawablePadding="4dp"
 			android:gravity="center_vertical|right"
 			android:textColor="?android:attr/textColorSecondary"
 			android:textSize="10sp"/>
+		
+		<TextView
+			android:id="@+id/gap_indicator"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_centerInParent="true"
+			android:gravity="center"
+			android:minHeight="52dp"
+			android:text="@string/tap_to_load_more"
+			android:textAppearance="?android:attr/textAppearanceMedium"/>
 	</RelativeLayout>
 
 	<ImageView
 		android:id="@+id/account_color"
-		android:layout_width="3dp"
+		android:layout_width="4dp"
 		android:layout_height="match_parent"/>
 
 </LinearLayout>
